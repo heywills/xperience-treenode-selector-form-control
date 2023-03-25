@@ -1,5 +1,7 @@
 # Runs every time a package is installed in a project
-# Credit: https://www.rhyous.com/2015/05/14/setting-file-properties-in-a-nuget-package-build-action-copy-to-output-directory-custom-tool/
+# Credits:
+# https://www.rhyous.com/2015/05/14/setting-file-properties-in-a-nuget-package-build-action-copy-to-output-directory-custom-tool/
+# https://www.paraesthesia.com/archive/2013/05/15/setting-dependentupon-file-properties-on-nuget-package-install.aspx/
  
 param($installPath, $toolsPath, $package, $project)
  
@@ -10,19 +12,17 @@ param($installPath, $toolsPath, $package, $project)
  
 function SetFilePropertiesRecursively
 {
+    param([__ComObject]$projectItem)
     $folderKind = "{6BB5F8EF-4483-11D3-8BCF-00C04F8EC28C}";
-    foreach ($subItem in $args[0].ProjectItems)
+    foreach ($subItem in $projectItem.ProjectItems)
     {
-        $path = $args[1]
-        if ($subItem.Kind -eq $folderKind)
+        if ($subItem.Kind -ne $folderKind)
         {
-            SetFilePropertiesRecursively $subItem ("{0}{1}{2}" -f $path, $args[0].Name, "\")
-        }
-        else
-        {
-            Write-Host -NoNewLine ("{0}{1}{2}" -f $path, $args[0].Name, "\")
             SetFileProperties $subItem
+            SetItemDependentUponRelationship $subItem $projectItem
         }
+        # Folders and non-folders can have child items.
+        SetFilePropertiesRecursively $subItem
     }
 }
  
@@ -40,7 +40,7 @@ function SetFileProperties
             $buildAction = 1
             Break
         }
-        '*.aspx'
+        '*.as?x'
         {
             $message = "  Setting Build Action to Content"
             $buildAction = 2
@@ -54,14 +54,58 @@ function SetFileProperties
         }
         default
         {
-            Write-Information "  Skipping file"
+            Write-Host "  Not setting Build Action"
             return
         }
     }
     Write-Host $message
     $item.Properties.Item("BuildAction").Value = $buildAction
 }
+
+function SetItemDependentUponRelationship
+{
+    param([__ComObject]$projectItem, [__ComObject]$parentProjectItem)
+    # Set project dependencies
+    $fileName = $projectItem.Name
+    $targetParentFileName = ""
+    switch -Wildcard ( $fileName )
+    {
+        '*.designer.cs'
+        {
+            $targetParentFileName = $fileName.Remove($fileName.Length - ".designer.cs".Length)
+            Break
+        }
+        '*.as?x.cs'
+        {
+            $targetParentFileName = $fileName.Remove($fileName.Length - ".cs".Length)
+            Break
+        }
+        default
+        {
+            Write-Host "  File is not dependent"
+            return
+        }
+    }
+    # Check current parent item
+    if($parentProjectItem.Name -eq $targetParentFileName)
+    {
+        Write-Host "  The file $($fileName) is already dependent upon $($targetParentFileName)"
+        return
+    }
+    # Get desired target
+    $targetParentProjectItem = $parentProjectItem.ProjectItems.Item("$targetParentFileName")
+    if($null -eq $targetParentProjectItem)
+    {
+        Write-Host "  Could not find the dependency parent $($targetParentFileName) for $($fileName)"
+    }
+    Write-Host "  Making $($fileName) dependent upon $($targetParentFileName)"
+    $newProjectItem = $targetParentProjectItem.ProjectItems.AddFromFile($projectItem.Properties.Item("FullPath").Value)
+    SetFileProperties $newProjectItem
+}
+
+# .Properties.Item("FullPath").Value
  
 $cmsFormControls = $project.ProjectItems.Item("CMSFormControls")
-$thisModuleItem = $cmsFormControls.ProjectItems.Item("BlueModus")
-SetFilePropertiesRecursively $thisModuleItem
+$organizationFolder = $cmsFormControls.ProjectItems.Item("BlueModus")
+$thisFormControlFolder = $organizationFolder.ProjectItems.Item("RelatedContentSelector")
+SetFilePropertiesRecursively $thisFormControlFolder
