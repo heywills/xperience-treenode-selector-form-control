@@ -28,12 +28,6 @@
                 <span class="ClearBoth"></span>
             </div>
         </asp:PlaceHolder>
-     <%--   <cms:DevelopmentMode ID="devPanel" runat="server">
-            <a href="<%=UIContextHelper.GetElementUrl("CMS.DocumentEngine", "EditDocumentType", false, ci.ClassID, "tabname=fields") %>" target="_target" title="<%= GetString("documenttype.editdocumenttype") %>">
-                <i aria-hidden="true" class="icon-edit cms-icon-80"></i> 
-                <span class="sr-only"><%= GetString("documenttype.editdocumenttype") %></span>  
-            </a>
-        </cms:DevelopmentMode>--%>
     </asp:Panel>
     <asp:Button ID="btnRefresh" runat="server" CssClass="HiddenButton" EnableViewState="false"
         OnClick="btnRefresh_Click" UseSubmitBehavior="false" />

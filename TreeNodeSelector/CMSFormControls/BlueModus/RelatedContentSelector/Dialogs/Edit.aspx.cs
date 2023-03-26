@@ -1,10 +1,7 @@
 ﻿using System;
-
 using CMS.Base;
 using CMS.DocumentEngine;
-
 using System.Linq;
-
 using CMS.Base.Web.UI;
 using CMS.Core;
 using CMS.DataEngine;
@@ -146,7 +143,6 @@ namespace CMSApp.CMSFormControls.RelatedContentSelector.Dialogs
 
             DocumentManager.OnAfterAction += DocumentManager_OnAfterAction;
             DocumentManager.OnLoadData += DocumentManager_OnLoadData;
-            DocumentManager.OnBeforeAction += DocumentManager_OnBeforeAction;
 
             // Register scripts
             string script = "function " + formElem.ClientID + "_RefreshForm(){" + Page.ClientScript.GetPostBackEventReference(btnRefresh, "") + " }";
@@ -182,14 +178,6 @@ namespace CMSApp.CMSFormControls.RelatedContentSelector.Dialogs
                             {
                                 throw new Exception("[Content/Edit.aspx]: Class ID '" + ClassID + "' not found.");
                             }
-
-                            //if (ci.ClassName.ToLowerCSafe() == "cms.blog")
-                            //{
-                            //    if (!LicenseHelper.LicenseVersionCheck(RequestContext.CurrentDomain, FeatureEnum.Blogs, ObjectActionEnum.Insert))
-                            //    {
-                            //        RedirectToAccessDenied(String.Format(GetString("cmsdesk.bloglicenselimits"), ""));
-                            //    }
-                            //}
 
                             if (!LicenseHelper.LicenseVersionCheck(RequestContext.CurrentDomain, FeatureEnum.Documents, ObjectActionEnum.Insert))
                             {
@@ -262,13 +250,6 @@ namespace CMSApp.CMSFormControls.RelatedContentSelector.Dialogs
                                 if (authorized)
                                 {
                                     string className = DocumentManager.NewNodeClassName;
-                                    //if (className.ToLowerCSafe() == "cms.blog")
-                                    //{
-                                    //    if (!LicenseHelper.LicenseVersionCheck(RequestContext.CurrentDomain, FeatureEnum.Blogs, ObjectActionEnum.Insert))
-                                    //    {
-                                    //        RedirectToAccessDenied(String.Format(GetString("cmsdesk.bloglicenselimits"), ""));
-                                    //    }
-                                    //}
 
                                     if (!LicenseHelper.LicenseVersionCheck(RequestContext.CurrentDomain, FeatureEnum.Documents, ObjectActionEnum.Insert))
                                     {
@@ -422,28 +403,6 @@ namespace CMSApp.CMSFormControls.RelatedContentSelector.Dialogs
 
         #region "Document manager events"
 
-        void DocumentManager_OnBeforeAction(object sender, DocumentManagerEventArgs e)
-        {
-            if (newdocument || newculture)
-            {
-                //var pti = PageTemplateInfoProvider.GetPageTemplateInfo(formElem.DefaultPageTemplateID);
-                //// Ensure ad-hoc template as default                    
-                //if ((pti != null) && pti.IsReusable && pti.PageTemplateCloneAsAdHoc)
-                //{
-                //    // Create ad-hoc template (display name is created automatically)
-                //    var adHocTemplate = PageTemplateInfoProvider.CloneTemplateAsAdHoc(pti, null, SiteContext.CurrentSiteID, e.Node.NodeGUID);
-                //    PageTemplateInfoProvider.SetPageTemplateInfo(adHocTemplate);
-                //    formElem.DefaultPageTemplateID = adHocTemplate.PageTemplateId;
-
-                //    if (SiteContext.CurrentSite != null)
-                //    {
-                //        PageTemplateInfoProvider.AddPageTemplateToSite(adHocTemplate.PageTemplateId, SiteContext.CurrentSiteID);
-                //    }
-                //}
-            }
-        }
-
-
         protected void DocumentManager_OnAfterAction(object sender, DocumentManagerEventArgs e)
         {
             TreeNode node = e.Node;
@@ -456,28 +415,11 @@ namespace CMSApp.CMSFormControls.RelatedContentSelector.Dialogs
                 {
                     SessionHelper.SetValue("FormErrorText|" + newNodeId, formElem.MessagesPlaceHolder.ErrorText);
                 }
-
-                //var pti = PageTemplateInfoProvider.GetPageTemplateInfo(node.NodeTemplateID);
-                //if ((pti != null) && !pti.IsReusable)
-                //{
-                //    // Update node guid and display name when new document selected template is ad-hoc
-                //    pti.PageTemplateNodeGUID = node.NodeGUID;
-                //    pti.DisplayName = "Ad-hoc: " + node.DocumentName;
-
-                //    PageTemplateInfoProvider.SetPageTemplateInfo(pti);
-                //}
             }
             else
             {
                 // Reload the values in the form
                 formElem.LoadControlValues();
-
-                // Icky, bordering on offensive, hack, but it works... still need to figure out why Save/Close isn't working out of the box
-                // ScriptHelper.CloseWindow is not meant to be used this way, but it forces the parent iFrame to fresh, so we settled
-                // Leaving it outide the conditional makes sure it fires for all actions, should probably ignore for spell check
-#pragma warning disable CS0618 // Type or member is obsolete
-                // ScriptHelper.CloseWindow(Page, true);
-#pragma warning restore CS0618 // Type or member is obsolete
                 string eventArgument = Page.Request.Form["__EVENTARGUMENT"].ToLower();
                 if(eventArgument.IndexOf("save;saveandclose") >= 0)
                 {
