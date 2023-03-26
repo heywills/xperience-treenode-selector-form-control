@@ -1,4 +1,8 @@
-﻿using System;
+﻿/*
+    This page is provided by the Nuget package XperienceCommunity.TreeNodeSelectorFormControl.
+    Changes to this file will be lost when this package is restored or updated.
+*/
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;

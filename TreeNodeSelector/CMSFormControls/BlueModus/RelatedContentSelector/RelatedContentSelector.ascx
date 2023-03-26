@@ -1,4 +1,8 @@
-﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="RelatedContentSelector.ascx.cs" Inherits="CMSApp.CMSFormControls.RelatedContentSelector.RelatedContentSelector" %>
+﻿<%-- 
+    This control is provided by the Nuget package XperienceCommunity.TreeNodeSelectorFormControl.
+    Changes to this file will be lost when this package is restored or updated.
+--%>
+<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="RelatedContentSelector.ascx.cs" Inherits="CMSApp.CMSFormControls.RelatedContentSelector.RelatedContentSelector" %>
 
 <asp:UpdatePanel runat="server" EnableViewState="false">
     <ContentTemplate>

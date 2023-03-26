@@ -1,4 +1,15 @@
-﻿using System;
+﻿/*
+    This page is provided by the Nuget package XperienceCommunity.TreeNodeSelectorFormControl.
+    Changes to this file will be lost when this package is restored or updated.
+
+    The page is based on the out-of-the-box page, content editor page:
+    .\CMSModules\Content\CMSDesk\Edit\Edit.aspx.cs
+
+    However, it is modified to allow being used as a modal dialog. Primarily, it needed
+    to be updated to provide a SaveAndClose button. That would tell Kentico's modal
+    framework to close the window after saving.
+*/
+using System;
 using CMS.Base;
 using CMS.DocumentEngine;
 using System.Linq;

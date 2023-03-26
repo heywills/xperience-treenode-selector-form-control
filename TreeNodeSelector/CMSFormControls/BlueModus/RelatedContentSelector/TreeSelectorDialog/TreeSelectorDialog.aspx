@@ -1,4 +1,8 @@
-﻿<%@ Page Language="C#" AutoEventWireup="false" CodeBehind="TreeSelectorDialog.aspx.cs" Inherits="CMSApp.CMSFormControls.BlueModus.RelatedContentSelector.TreeSelectorDialog.TreeSelectorDialog" Theme="default" MasterPageFile="~/CMSMasterPages/UI/Dialogs/ModalDialogPage.master" Title="Selection dialog" ValidateRequest="false"%>
+﻿<%-- 
+    This page is provided by the Nuget package XperienceCommunity.TreeNodeSelectorFormControl.
+    Changes to this file will be lost when this package is restored or updated.
+--%>
+<%@ Page Language="C#" AutoEventWireup="false" CodeBehind="TreeSelectorDialog.aspx.cs" Inherits="CMSApp.CMSFormControls.BlueModus.RelatedContentSelector.TreeSelectorDialog.TreeSelectorDialog" Theme="default" MasterPageFile="~/CMSMasterPages/UI/Dialogs/ModalDialogPage.master" Title="Selection dialog" ValidateRequest="false"%>
 <%@ Register Src="~/CMSAdminControls/UI/Trees/UniTree.ascx" TagName="UniTree" TagPrefix="cms" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="plcContent" runat="Server">
