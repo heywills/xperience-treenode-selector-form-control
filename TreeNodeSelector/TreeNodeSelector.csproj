@@ -516,42 +516,6 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="BuildPackage.bat" />
-    <Content Include="CMSFormControls\BlueModus\RelatedContentSelector\Dialogs\Edit.aspx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="CMSFormControls\BlueModus\RelatedContentSelector\icon.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="CMSFormControls\BlueModus\RelatedContentSelector\RelatedContentSelector.ascx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="CMSFormControls\BlueModus\RelatedContentSelector\TreeSelectorDialog\TreeSelectorDialog.aspx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="CMSFormControls\BlueModus\RelatedContentSelector\Dialogs\Edit.aspx.cs">
-      <DependentUpon>Edit.aspx</DependentUpon>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="CMSFormControls\BlueModus\RelatedContentSelector\Dialogs\Edit.aspx.designer.cs">
-      <DependentUpon>Edit.aspx.cs</DependentUpon>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="CMSFormControls\BlueModus\RelatedContentSelector\RelatedContentSelector.ascx.cs">
-      <DependentUpon>RelatedContentSelector.ascx</DependentUpon>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="CMSFormControls\BlueModus\RelatedContentSelector\RelatedContentSelector.ascx.designer.cs">
-      <DependentUpon>RelatedContentSelector.ascx.cs</DependentUpon>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="CMSFormControls\BlueModus\RelatedContentSelector\TreeSelectorDialog\TreeSelectorDialog.aspx.cs">
-      <DependentUpon>TreeSelectorDialog.aspx</DependentUpon>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="CMSFormControls\BlueModus\RelatedContentSelector\TreeSelectorDialog\TreeSelectorDialog.aspx.designer.cs">
-      <DependentUpon>TreeSelectorDialog.aspx.cs</DependentUpon>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Compile Include="Constants\QueryConstants.cs" />
     <Compile Include="Constants\ResourceConstants.cs" />
     <Compile Include="Constants\FormUserControlConstants.cs" />
@@ -568,7 +532,7 @@
     <Analyzer Include="..\packages\AWSSDK.S3.3.3.104.36\analyzers\dotnet\cs\AWSSDK.S3.CodeAnalysis.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="content\" />
+    <Folder Include="CMSFiles\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

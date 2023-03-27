@@ -19,7 +19,10 @@
     </dependencies>
 	</metadata>
 	<files>
-    <file src="CMSFormControls\*" target="CMSFormControls\" />
+    <!-- Don't include the "content" folder in the Visual Studio project or there will
+         be redundant copies of the files in the Nuget package. -->
+    <file src="content\App_Data\**" target="content\App_Data"/>
+    <file src="content\CMSFormControls\**" target="content\CMSFormControls\" />
     <file src="tools\Install.ps1" target="tools\Install.ps1" />
   </files>
 </package>
