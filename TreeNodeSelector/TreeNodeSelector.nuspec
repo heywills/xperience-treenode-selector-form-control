@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<package >
+	<metadata>
+		<id>$id$</id>
+		<version>$version$</version>
+		<title>$title$</title>
+		<authors>Kentico Community</authors>
+		<owners>Kentico Community</owners>
+		<projectUrl>https://github.com/heywills/xperience-treenode-selector-form-control</projectUrl>
+		<icon>content/CMSFormControls/BlueModus/RelatedContentSelector/icon.png</icon>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<license type="expression">MIT</license>
+		<description>$description$</description>
+		<releaseNotes/>
+		<copyright>2023 Kentico Community</copyright>
+		<tags>Kentico Xperience Atomic Content FormControl Selector</tags>
+		<dependencies>
+			<dependency id="Kentico.Xperience.Libraries" version="[13.0.0,13.1.0)" />
+    </dependencies>
+	</metadata>
+	<files>
+    <!-- Don't include the "content" folder in the Visual Studio project or there will
+         be redundant copies of the files in the Nuget package. -->
+    <file src="content\App_Data\**" target="content\App_Data"/>
+    <file src="content\CMSFormControls\**" target="content\CMSFormControls\" />
+    <file src="tools\Install.ps1" target="tools\Install.ps1" />
+  </files>
+</package>
