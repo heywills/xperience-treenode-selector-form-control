@@ -550,6 +550,7 @@
       <DependentUpon>TreeSelectorDialog.aspx.cs</DependentUpon>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Compile Include="Constants\QueryConstants.cs" />
     <Compile Include="Constants\ResourceConstants.cs" />
     <Compile Include="Constants\FormUserControlConstants.cs" />
     <Compile Include="Core\ITreeNodeSelectorInstaller.cs" />

@@ -1,11 +1,13 @@
 ﻿using CMS.Base;
 using CMS.Core;
+using CMS.DataEngine;
+using CMS.FormEngine;
 using CMS.Modules;
 using CMS.SiteProvider;
-using XperienceCommunity.TreeNodeSelectorFormControl.Constants;
-using XperienceCommunity.TreeNodeSelectorFormControl.Core;
 using System;
 using System.Linq;
+using XperienceCommunity.TreeNodeSelectorFormControl.Constants;
+using XperienceCommunity.TreeNodeSelectorFormControl.Core;
 
 namespace XperienceCommunity.TreeNodeSelectorFormControl.Installers
 {
@@ -15,17 +17,25 @@ namespace XperienceCommunity.TreeNodeSelectorFormControl.Installers
         private readonly IResourceInfoProvider _resourceInfoProvider;
         private readonly IResourceSiteInfoProvider _resourceSiteInfoProvider;
         private readonly ISiteInfoProvider _siteInfoProvider;
+        private readonly IQueryInfoProvider _queryInfoProvider;
 
 
+        /// <remarks>
+        /// This class also uses the following hard-coded, concrete dependencies:
+        ///     FormUserControlInfoProvider
+        ///     QueryInfoProvider
+        /// </remarks>
         public TreeNodeSelectorInstaller(IEventLogService eventLogService,
                                            IResourceInfoProvider resourceInfoProvider,
                                            IResourceSiteInfoProvider resourceSiteInfoProvider,
-                                           ISiteInfoProvider siteInfoProvider)
+                                           ISiteInfoProvider siteInfoProvider,
+                                           IQueryInfoProvider queryInfoProvider)
         {
             _eventLogService = eventLogService;
             _resourceInfoProvider = resourceInfoProvider;
             _resourceSiteInfoProvider = resourceSiteInfoProvider;
             _siteInfoProvider = siteInfoProvider;
+            _queryInfoProvider = queryInfoProvider;
         }
 
         public void Install()
@@ -102,8 +112,8 @@ namespace XperienceCommunity.TreeNodeSelectorFormControl.Installers
                 // finds a module meta file in ~\App_Data\CMSModules\CMSInstallation\Packages\Installed
                 resourceInfo.ResourceInstallationState = ResourceConstants.ResourceInstallationState;
                 _resourceInfoProvider.Set(resourceInfo);
-
-                InstallQueryObject(resourceInfo);
+                InstallUserControlObject(resourceInfo); 
+                InstallQueryObject();
                 StoreInstalledVersion(resourceInfo);
                 LogInformation("COMPLETE", $"{(resourceInfo == null ? "Install" : "Update")} of the module '{ResourceConstants.ResourceDisplayName}' version {resourceInfo.ResourceVersion} is complete.");
                 return resourceInfo;
@@ -131,7 +141,7 @@ namespace XperienceCommunity.TreeNodeSelectorFormControl.Installers
             }
         }
 
-        private void InstallQueryObject(ResourceInfo resourceInfo)
+        private void InstallQueryObject()
         {
             using (new CMSActionContext
             {
@@ -139,6 +149,31 @@ namespace XperienceCommunity.TreeNodeSelectorFormControl.Installers
                 ContinuousIntegrationAllowObjectSerialization = false
             })
             {
+                // NOTE: The static method GetQueryInfo has significant optimizations for this
+                // query that are not provided by the injected implementation, including using
+                // a hashtable for quick in-memory lookup of a QueryInfo by its fully-qualified
+                // name.
+                // To use the injectable implementation, I would need an IDataClassInfoProvider
+                // to get the page type containing the query -- not available. Boo.
+                var queryInfo = QueryInfoProvider.GetQueryInfo(QueryConstants.FullyQualifiedQueryName, false)
+                                ??
+                                new QueryInfo();
+                queryInfo.QueryName = QueryConstants.QueryName;
+                queryInfo.QueryType = QueryTypeEnum.SQLQuery;
+                queryInfo.QueryRequiresTransaction = false;
+                queryInfo.QueryIsCustom = true;
+                queryInfo.QueryIsLocked = true;
+                queryInfo.QueryText = QueryConstants.QueryText;
+                if (string.IsNullOrEmpty(queryInfo.QueryClassName))
+                {
+                    var dataClassInfo = DataClassInfoProvider.GetDataClassInfo(QueryConstants.ClassName);
+                    if(dataClassInfo == null)
+                    {
+                        throw new DataClassNotFoundException($"The query required by the control, '{FormUserControlConstants.ControlDisplayName}', cannot be installed because the page type, '{QueryConstants.ClassName}', is missing.", QueryConstants.ClassName);
+                    }
+                    queryInfo.ClassID = dataClassInfo.ClassID;
+                }
+                _queryInfoProvider.Set(queryInfo);
             }
         }
 
@@ -150,6 +185,31 @@ namespace XperienceCommunity.TreeNodeSelectorFormControl.Installers
                 ContinuousIntegrationAllowObjectSerialization = false
             })
             {
+                var formUserControlInfo = FormUserControlInfoProvider.GetFormUserControlInfo(FormUserControlConstants.ControlCodeName)
+                                          ??
+                                          new FormUserControlInfo();
+                formUserControlInfo.UserControlDisplayName = FormUserControlConstants.ControlDisplayName;
+                formUserControlInfo.UserControlCodeName = FormUserControlConstants.ControlCodeName;
+                formUserControlInfo.UserControlDescription = FormUserControlConstants.ControlDescription;
+                formUserControlInfo.UserControlFileName  = FormUserControlConstants.ControlFileName;
+                formUserControlInfo.UserControlResourceID = resourceInfo.ResourceID;
+                formUserControlInfo.UserControlForLongText = true;
+                formUserControlInfo.UserControlForText = true;
+                formUserControlInfo.UserControlForGUID = true;
+                formUserControlInfo.UserControlShowInDocumentTypes = true;
+                formUserControlInfo.UserControlShowInCustomTables = true;
+                formUserControlInfo.UserControlForInteger = false;
+                formUserControlInfo.UserControlForDecimal = false;
+                formUserControlInfo.UserControlForDateTime = false;
+                formUserControlInfo.UserControlForBoolean = false;
+                formUserControlInfo.UserControlForFile = false;
+                formUserControlInfo.UserControlForDocAttachments = false;
+                formUserControlInfo.UserControlForBinary = false;
+                formUserControlInfo.UserControlForDocRelationships = false;
+                // If someone enables UserControlForGuid/Text or UserControlShowInReports/WebParts/SystemTables,
+                // this installer will not override it. There maybe use cases that work.
+                formUserControlInfo.UserControlParameters = FormUserControlConstants.ControlParameters;
+                FormUserControlInfoProvider.SetFormUserControlInfo(formUserControlInfo);
             }
         }
 
