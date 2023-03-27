@@ -519,7 +519,9 @@
     <Content Include="CMSFormControls\BlueModus\RelatedContentSelector\Dialogs\Edit.aspx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="CMSFormControls\BlueModus\RelatedContentSelector\icon.png" />
+    <Content Include="CMSFormControls\BlueModus\RelatedContentSelector\icon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="CMSFormControls\BlueModus\RelatedContentSelector\RelatedContentSelector.ascx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -564,6 +566,9 @@
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\AWSSDK.S3.3.3.104.36\analyzers\dotnet\cs\AWSSDK.S3.CodeAnalysis.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="content\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

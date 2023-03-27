@@ -350,6 +350,6 @@ MigrationBackup/
 .ionide/
 
 # Ignore build-generated module export file
-TreeNodeSelector/content/App_Data/CMSModules/XperienceCommunity.TreeNodeSelector/Install/
+TreeNodeSelector/content/App_Data/CMSModules/XperienceCommunity.TreeNodeSelectorFormControl/Install/
 # Ignore build-generated module meta file.
 TreeNodeSelector/content/App_Data/CMSModules/CMSInstallation/Packages/
