@@ -3,7 +3,7 @@
 This Kentico Xperience form control provides a tree-based selector, with configurable page type and path filters. 
 
 ## Purpose
-Creating reusable, atomic content, and composing pages using content relationships is becoming increasingly popular with the advent of headless CMS and hybrid CMS platforms. In Kentico Xperience, this control provides an easy way to provide an authoring experience for composing content using content references..
+Creating reusable, atomic content, and composing pages using content relationships is becoming increasingly popular with the advent of headless CMS and hybrid CMS platforms. In Kentico Xperience, this control provides an easy way to provide an authoring experience for composing content using content references.
 
 ## Features
 ### Tree-based browsing
