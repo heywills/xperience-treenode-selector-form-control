@@ -807,7 +807,7 @@ namespace CMSApp.CMSFormControls.RelatedContentSelector
 
                 // Dialog scripts
                 ScriptHelper.RegisterDialogScript(Page);
-
+                var editUrl = UrlResolver.ResolveUrl($"~/CMSFormControls/BlueModus/RelatedContentSelector/Dialogs/Edit.aspx");
 
                 script.Append(@"
 
@@ -820,7 +820,7 @@ namespace CMSApp.CMSFormControls.RelatedContentSelector
                 {
                     console.log('EditMe');
                     if (!CheckChanges()) { return false; }
-                    modalDialog('/CMSFormControls/BlueModus/RelatedContentSelector/Dialogs/Edit.aspx?dialog=1&nodeid=' + editNodeId + '&culture=' + culture, 'editpage', '90%', '90%');
+                    modalDialog('" + editUrl + @"?dialog=1&nodeid=' + editNodeId + '&culture=' + culture, 'editpage', '90%', '90%');
                 }");
 
                 ScriptHelper.RegisterJQueryDialog(Page);
