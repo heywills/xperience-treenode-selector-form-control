@@ -23,7 +23,7 @@ namespace XperienceCommunity.TreeNodeSelectorFormControl.Constants
 -- TEST PARAMETERS START
 /*
 DECLARE @SiteID int;
-DECLARE @Culture nvarchar(5);
+DECLARE @Culture nvarchar(50);
 DECLARE @SelectedNodeGuids [Type_CMS_GuidTable];
 DECLARE @SelectablePageTypes [Type_CMS_StringTable];
 DECLARE @StartingNodeAliasPath nvarchar(450);
@@ -373,7 +373,7 @@ SELECT [Statement] = @sql
 DECLARE @paramaterDefinitions nvarchar(max);
 
 SET @paramaterDefinitions = N'@SiteID int,
-							  @Culture nvarchar(5),
+							  @Culture nvarchar(50),
 							  @StartingNodeAliasPath nvarchar(450),
 							  @SearchText nvarchar(50),
 							  @SelectedNodeGuids [Type_CMS_GuidTable] READONLY,
