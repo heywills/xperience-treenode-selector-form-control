@@ -92,7 +92,11 @@ namespace XperienceCommunity.TreeNodeSelectorFormControl.Installers
             })
             {
                 var resourceInfo = _resourceInfoProvider.Get(ResourceConstants.ResourceName);
-                if (InstalledModuleIsCurrent(resourceInfo))
+                var formUserControlInfo = GetSelectorFormUserControlInfo();
+                var queryInfo = GetSelectorQueryInfo();
+                if (InstalledModuleIsCurrent(resourceInfo) &&
+                    InstalledQueryIsCurrent(queryInfo) &&
+                    InstalledFormUserControlIsCurrent(formUserControlInfo))
                 {
                     LogInformation("CURRENT", $"The '{ResourceConstants.ResourceDisplayName}' module is already installed and current.");
                     return resourceInfo;
@@ -112,8 +116,8 @@ namespace XperienceCommunity.TreeNodeSelectorFormControl.Installers
                 // finds a module meta file in ~\App_Data\CMSModules\CMSInstallation\Packages\Installed
                 resourceInfo.ResourceInstallationState = ResourceConstants.ResourceInstallationState;
                 _resourceInfoProvider.Set(resourceInfo);
-                InstallUserControlObject(resourceInfo); 
-                InstallQueryObject();
+                InstallUserControlObject(resourceInfo, formUserControlInfo); 
+                InstallQueryObject(queryInfo);
                 StoreInstalledVersion(resourceInfo);
                 LogInformation("COMPLETE", $"{(resourceInfo == null ? "Install" : "Update")} of the module '{ResourceConstants.ResourceDisplayName}' version {resourceInfo.ResourceVersion} is complete.");
                 return resourceInfo;
@@ -141,21 +145,15 @@ namespace XperienceCommunity.TreeNodeSelectorFormControl.Installers
             }
         }
 
-        private void InstallQueryObject()
+        private void InstallQueryObject(QueryInfo existingQueryInfo)
         {
             using (new CMSActionContext
             {
                 LogSynchronization = false,
-                ContinuousIntegrationAllowObjectSerialization = false
+                ContinuousIntegrationAllowObjectSerialization = true
             })
             {
-                // NOTE: The static method GetQueryInfo has significant optimizations for this
-                // query that are not provided by the injected implementation, including using
-                // a hashtable for quick in-memory lookup of a QueryInfo by its fully-qualified
-                // name.
-                // To use the injectable implementation, I would need an IDataClassInfoProvider
-                // to get the page type containing the query -- not available. Boo.
-                var queryInfo = QueryInfoProvider.GetQueryInfo(QueryConstants.FullyQualifiedQueryName, false)
+                var queryInfo = existingQueryInfo
                                 ??
                                 new QueryInfo();
                 queryInfo.QueryName = QueryConstants.QueryName;
@@ -177,15 +175,15 @@ namespace XperienceCommunity.TreeNodeSelectorFormControl.Installers
             }
         }
 
-        private void InstallUserControlObject(ResourceInfo resourceInfo)
+        private void InstallUserControlObject(ResourceInfo resourceInfo, FormUserControlInfo existingFormUserControlInfo)
         {
             using (new CMSActionContext
             {
                 LogSynchronization = false,
-                ContinuousIntegrationAllowObjectSerialization = false
+                ContinuousIntegrationAllowObjectSerialization = true
             })
             {
-                var formUserControlInfo = FormUserControlInfoProvider.GetFormUserControlInfo(FormUserControlConstants.ControlCodeName)
+                var formUserControlInfo = existingFormUserControlInfo
                                           ??
                                           new FormUserControlInfo();
                 formUserControlInfo.UserControlDisplayName = FormUserControlConstants.ControlDisplayName;
@@ -213,11 +211,45 @@ namespace XperienceCommunity.TreeNodeSelectorFormControl.Installers
             }
         }
 
+        private QueryInfo GetSelectorQueryInfo()
+        {
+            // NOTE: The static method GetQueryInfo has significant optimizations for this
+            // query that are not provided by the injected implementation, including using
+            // a hashtable for quick in-memory lookup of a QueryInfo by its fully-qualified
+            // name.
+            // To use the injectable implementation, I would need an IDataClassInfoProvider
+            // to get the page type containing the query -- not available. Boo.
+            var queryInfo = QueryInfoProvider.GetQueryInfo(QueryConstants.FullyQualifiedQueryName, false);
+            return queryInfo;
+        }
+
+        private FormUserControlInfo GetSelectorFormUserControlInfo()
+        {
+            return FormUserControlInfoProvider.GetFormUserControlInfo(FormUserControlConstants.ControlCodeName);
+        }
 
         private bool InstalledModuleIsCurrent(ResourceInfo resourceInfo)
         {
             return (resourceInfo != null) &&
                    (GetModuleVersionFromAssembly() == resourceInfo.ResourceInstalledVersion);
+        }
+
+        /// <summary>
+        /// It's common for cms.query objects to be tracked in CI, which can
+        /// cause a query to be accidentally deleted after the module is installed.
+        /// </summary>
+        /// <param name="queryInfo"></param>
+        /// <returns></returns>
+        private bool InstalledQueryIsCurrent(QueryInfo queryInfo)
+        {
+            return (queryInfo != null) &&
+                   (queryInfo.QueryText == QueryConstants.QueryText);            ;
+        }
+
+        private bool InstalledFormUserControlIsCurrent(FormUserControlInfo formUserControlInfo)
+        {
+            return (formUserControlInfo != null) &&
+                   (formUserControlInfo.UserControlFileName == FormUserControlConstants.ControlFileName);
         }
 
         /// <summary>
