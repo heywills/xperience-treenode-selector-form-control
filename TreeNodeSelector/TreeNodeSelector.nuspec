@@ -11,7 +11,12 @@
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<license type="expression">MIT</license>
 		<description>$description$</description>
-		<releaseNotes/>
+		<releaseNotes>
+		1.0.4 - Fixed potential for missing cms.query dependency
+		1.0.3 - Support for culture codes greater than 5 chars
+		1.0.2 - Support for hosting CMS in an IIS virtual directory
+		1.0.1 - Initial version
+		</releaseNotes>
 		<copyright>2023 Kentico Community</copyright>
 		<tags>Kentico Xperience Atomic Content FormControl Selector</tags>
 		<dependencies>
