@@ -12,7 +12,8 @@
 		<license type="expression">MIT</license>
 		<description>$description$</description>
 		<releaseNotes>
-		1.0.5 - Updated Kentico.Xperience.Libraries 13.0.13 to prevent requiring an assemblyBinding to continuousintegration.exe.config.
+		1.0.5 - Fixed bug that prevented limiting page selection to exactly two.
+		      - Updated Kentico.Xperience.Libraries 13.0.13 to prevent requiring an assemblyBinding to continuousintegration.exe.config.
 		1.0.4 - Fixed potential for missing cms.query dependency
 		1.0.3 - Support for culture codes greater than 5 chars
 		1.0.2 - Support for hosting CMS in an IIS virtual directory
