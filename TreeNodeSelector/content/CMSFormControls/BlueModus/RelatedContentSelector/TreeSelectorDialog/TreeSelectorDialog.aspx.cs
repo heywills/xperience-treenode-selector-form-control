@@ -426,7 +426,9 @@ function GetSelectionCount() {{
     var items = itemsElem.value;
     var trimmedItems = items.replace(/^{_valuesSeparator}+|{_valuesSeparator}+$/g, '');
     var separatorCount = (trimmedItems.match(new RegExp('{_valuesSeparator}', 'g')) || []).length;
-    return separatorCount + 1;
+    return (trimmedItems === null || trimmedItems.length === 0) ? 
+                0 : 
+                separatorCount + 1;
 }}
 
 
