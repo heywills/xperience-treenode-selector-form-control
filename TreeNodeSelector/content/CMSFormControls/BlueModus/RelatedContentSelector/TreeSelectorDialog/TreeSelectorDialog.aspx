@@ -14,7 +14,7 @@
                         <div class="form-group form-group-buttons">
                             <div class="filter-form-value-cell">
                                 <cms:CMSTextBox ID="SearchTermBox" MaxLength="50" runat="server" WatermarkCssClass="WatermarkText" WatermarkText="Search by name"/>
-                                <cms:CMSRegularExpressionValidator ID="SearchTermBoxValidator" ValidationGroup="SearchValidationGroup" runat="server" Display="Dynamic" ControlToValidate="SearchTermBox" EnableClientScript="true" ValidationExpression="\S{3,}" Text="Please provide at least 3 characters." />
+                                <cms:CMSRegularExpressionValidator ID="SearchTermBoxValidator" ValidationGroup="SearchValidationGroup" runat="server" Display="Dynamic" ControlToValidate="SearchTermBox" EnableClientScript="true" ValidationExpression="\S{3,}.*$" Text="Please provide at least 3 characters." />
                                 <asp:HiddenField ID="HiddenCurrentSearchTerm" runat="server" EnableViewState="true" />
                             </div>
                             <div class="filter-form-buttons-cell-narrow">

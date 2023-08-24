@@ -12,6 +12,7 @@
 		<license type="expression">MIT</license>
 		<description>$description$</description>
 		<releaseNotes>
+		1.0.6 - Fixed bug that prevented users from having more than one word in search query
 		1.0.5 - Fixed bug that prevented limiting page selection to exactly two.
 		      - Updated Kentico.Xperience.Libraries 13.0.13 to prevent requiring an assemblyBinding to continuousintegration.exe.config.
 		1.0.4 - Fixed potential for missing cms.query dependency
