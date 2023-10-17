@@ -12,6 +12,10 @@
 		<license type="expression">MIT</license>
 		<description>$description$</description>
 		<releaseNotes>
+		1.0.7 - Fixed bug that caused item removal or sorting to be lost during postbacks triggered by sibling controls.
+		      - Added caching to improve postback performance.
+			  - Optimized queries of multiple treenodes.
+			  - Resolved script error caused by removal of DeviceContext/OEIsMobile from Kentico 13.
 		1.0.6 - Fixed bug that prevented users from having more than one word in search query
 		1.0.5 - Fixed bug that prevented limiting page selection to exactly two.
 		      - Updated Kentico.Xperience.Libraries 13.0.13 to prevent requiring an assemblyBinding to continuousintegration.exe.config.

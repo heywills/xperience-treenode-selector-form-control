@@ -17,6 +17,7 @@ using CMS.Localization;
 using CMS.MacroEngine;
 using CMS.SiteProvider;
 using CMS.UIControls;
+using DocumentFormat.OpenXml.Bibliography;
 
 namespace CMSApp.CMSFormControls.RelatedContentSelector
 {
@@ -110,7 +111,7 @@ namespace CMSApp.CMSFormControls.RelatedContentSelector
             {
                 string fieldValue = EnsureValueFormat(ValidationHelper.GetString(value, ""));
                 SetValue(fieldValue);
-                InitializeItems(fieldValue);
+                InitializeRepeater(fieldValue);
             }
         }
 
@@ -172,7 +173,7 @@ namespace CMSApp.CMSFormControls.RelatedContentSelector
         /// <returns></returns>
         private string GetStartPath()
         {
-            if(!_validatedStartingPath.IsNullOrWhiteSpace())
+            if (!_validatedStartingPath.IsNullOrWhiteSpace())
             {
                 return _validatedStartingPath;
             }
@@ -276,11 +277,7 @@ namespace CMSApp.CMSFormControls.RelatedContentSelector
             // Apply Form Control properties.
             SetTreeSelectorDialogParameters();
 
-            // initialize guids only if value in hidden field and uni selector didnt change
-            if (!this.IsPostBack)
-            {
-                InitializeItems(GetDelimiterWrappedValue());
-            }
+            InitializeRepeater(GetDelimiterWrappedValue());
 
             // Register edit script file
             RegisterEditScripts();
@@ -416,7 +413,7 @@ namespace CMSApp.CMSFormControls.RelatedContentSelector
 
         private SelectionModeEnum GetSelectionMode()
         {
-            return LimitSelectionTo == 1 ? SelectionModeEnum.SingleButton : SelectionModeEnum.MultipleButton; 
+            return LimitSelectionTo == 1 ? SelectionModeEnum.SingleButton : SelectionModeEnum.MultipleButton;
         }
 
         /// <summary>
@@ -447,27 +444,35 @@ namespace CMSApp.CMSFormControls.RelatedContentSelector
         /// <returns></returns>
         private string CreateSerializedValueFromList(List<Item> items)
         {
-            if(items == null || items.Count == 0)
+            if (items == null || items.Count == 0)
             {
                 return String.Empty;
             }
             var uniValue = string.Join(ITEM_SEPARATOR.ToString(), items.Select(i => i.ItemValue));
-            if(uniValue.IsNullOrWhiteSpace())
+            if (uniValue.IsNullOrWhiteSpace())
             {
                 return String.Empty;
             }
             return ITEM_SEPARATOR + uniValue + ITEM_SEPARATOR;
         }
 
-        private Item GetRelatedItemFromGuid(string itemId)
+        private List<Item> GetRelatedItemsFromGuids(string[] itemIds)
         {
-            Item item = null;
-            var node = GetTreeNodeFromNodeGuid(itemId);
-            if (node != null)
+            var nodes = GetTreeNodesFromNodeGuids(itemIds);
+            if(nodes == null)
             {
-                item = new Item() { ItemId = node.NodeID.ToString(), ItemText = GetDisplayContent(node), ItemValue = itemId, ItemState = GetNodeState(node) };
+                return null;
             }
-            return item;
+            var items = nodes.Select(node => new Item() 
+                                {
+                                    ItemId = node.NodeID.ToString(),
+                                    ItemText = GetDisplayContent(node),
+                                    ItemValue = node.NodeGUID.ToString(), 
+                                    ItemState = GetNodeState(node)
+                                })
+                            .OrderBy(x => Array.IndexOf(itemIds, x.ItemValue))
+                            .ToList();
+            return items;
         }
 
         /// <summary>
@@ -491,25 +496,33 @@ namespace CMSApp.CMSFormControls.RelatedContentSelector
             WindowHelper.Add(GetControlIdentifier(), hashtable);
         }
 
+        /// <summary>
+        /// Create a list of Item objects from the delimited list of guids.
+        /// </summary>
+        /// <param name="fieldValue"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// Consider refactoring so that this does one SQL round trip for the entire list
+        /// </remarks>
         private List<Item> CreateItemListRepeaterFromSerializedValue(string fieldValue)
         {
-            var itemList = new List<Item>();
 
-            if (!String.IsNullOrEmpty(fieldValue))
+            if (String.IsNullOrEmpty(fieldValue))
             {
-                var guids = fieldValue.Split(ITEM_SEPARATOR);
-                var index = 0;
-                foreach (var guid in guids)
-                {
-                    var itemObject = GetRelatedItemFromGuid(guid);
-                    if (itemObject != null)
-                    {
-                        itemList.Add(itemObject);
-                    }
-                    index++;
-                }
+                return new List<Item>();
             }
-            return itemList;
+            var guids = GetItemGuidsFromValueString(fieldValue);
+            var listItems = GetRelatedItemsFromGuids(guids);
+            return listItems;
+        }
+
+        private string[] GetItemGuidsFromValueString(string fieldValue)
+        {
+            if (String.IsNullOrWhiteSpace(fieldValue))
+            {
+                return new string[0];
+            }
+            return fieldValue.Trim(ITEM_SEPARATOR).Split(ITEM_SEPARATOR);
         }
 
         /// <summary>
@@ -557,20 +570,19 @@ namespace CMSApp.CMSFormControls.RelatedContentSelector
                     Redirect = false
                 };
 
-                if(ValidationHelper.ValidateHash(newValue, HiddenHash.Value, settings))
+                if (ValidationHelper.ValidateHash(newValue, HiddenHash.Value, settings))
                 {
                     _hashIsValid = true;
                     return;
                 }
                 var safeValueSet = HiddenSafeValueSet.Value;
-                if(ValidationHelper.ValidateHash(safeValueSet, HiddenHash.Value, settings))
+                if (ValidationHelper.ValidateHash(safeValueSet, HiddenHash.Value, settings))
                 {
-                    var safeValues = safeValueSet.Split(ITEM_SEPARATOR);
-                    var newValues = newValue.Split(ITEM_SEPARATOR);
+                    var safeValues = GetItemGuidsFromValueString(safeValueSet);
+                    var newValues = GetItemGuidsFromValueString(newValue);
                     _hashIsValid = newValues.All(guidString => guidString.IsNullOrWhiteSpace() || safeValues.Contains(guidString));
-                    if(_hashIsValid)
+                    if (_hashIsValid)
                     {
-                        SetHashValue();
                         return;
                     }
                 }
@@ -618,15 +630,15 @@ namespace CMSApp.CMSFormControls.RelatedContentSelector
 
         private string EnsureValueFormat(string value)
         {
-            if(value.IsNullOrWhiteSpace())
+            if (value.IsNullOrWhiteSpace())
             {
                 return string.Empty;
             }
-            if(value.Left(1) != ITEM_SEPARATOR.ToString())
+            if (value.Left(1) != ITEM_SEPARATOR.ToString())
             {
                 value = ITEM_SEPARATOR + value;
             }
-            if(value.Right(1) != ITEM_SEPARATOR.ToString())
+            if (value.Right(1) != ITEM_SEPARATOR.ToString())
             {
                 value += ITEM_SEPARATOR;
             }
@@ -636,7 +648,11 @@ namespace CMSApp.CMSFormControls.RelatedContentSelector
         /// <summary>
         /// Initializes repeater with list guids
         /// </summary>
-        private void InitializeItems(string fieldValue)
+        /// <remarks>
+        /// This method is relatively expensive, because it queries Kentico
+        /// for each guid to get the node details. 
+        /// </remarks>
+        private void InitializeRepeater(string fieldValue)
         {
             var itemList = CreateItemListRepeaterFromSerializedValue(fieldValue);
             var validatedValue = CreateSerializedValueFromList(itemList);
@@ -647,26 +663,45 @@ namespace CMSApp.CMSFormControls.RelatedContentSelector
 
         private TreeNode GetTreeNodeFromNodeGuid(string guidString)
         {
-            if(guidString.IsNullOrWhiteSpace())
+            if (guidString.IsNullOrWhiteSpace())
             {
                 return null;
             }
-            if(!Guid.TryParse(guidString, out var nodeGuid))
+
+            if (!Guid.TryParse(guidString, out _))
             {
                 return null;
             }
-            else
+            var nodes = GetTreeNodesFromNodeGuids(new[] { guidString });
+            return nodes.FirstOrDefault();
+        }
+
+        private List<TreeNode> GetTreeNodesFromNodeGuids(string[] guidStrings)
+        {
+            if (guidStrings is null || guidStrings.Length == 0)
             {
-                var node = new MultiDocumentQuery()
+                return null;
+            }
+            var currentCulture = GetEditFormCulture();
+            var cacheKey = $"{nameof(RelatedContentSelector)}|{nameof(GetTreeNodesFromNodeGuids)}|{currentCulture}|{string.Join("|", guidStrings)}";
+            var cacheSettings = new CacheSettings(60, cacheKey);
+            var cachedOutput = CacheHelper.Cache(c =>
+            {
+                var nodes = new MultiDocumentQuery()
                     .OnCurrentSite()
-                    .Culture(GetEditFormCulture())
+                    .Culture(currentCulture)
                     .CombineWithDefaultCulture()
                     .LatestVersion()
-                    .WhereEquals(nameof(TreeNode.NodeGUID), nodeGuid)
-                    .FirstOrDefault();
-                return node;
-
-            }
+                    .WhereIn(nameof(TreeNode.NodeGUID), guidStrings)
+                    .ToList();
+                var dependencyKeys = nodes.Select(n => $"documentid|{n.DocumentID}").ToList();
+                if(c.Cached)
+                {
+                    c.CacheDependency = CacheHelper.GetCacheDependency(dependencyKeys);
+                }
+                return nodes;
+            }, cacheSettings);
+            return cachedOutput;
         }
 
         private TreeNode GetTreeNodeFromNodeAliasPath(string nodeAliasPath)
@@ -675,14 +710,25 @@ namespace CMSApp.CMSFormControls.RelatedContentSelector
             {
                 return null;
             }
-            var node = new MultiDocumentQuery()
-                .OnCurrentSite()
-                .Culture(GetEditFormCulture())
-                .CombineWithDefaultCulture()
-                .LatestVersion()
-                .Path(nodeAliasPath)
-                .FirstOrDefault();
-            return node;
+            var currentCulture = GetEditFormCulture();
+            var cacheKey = $"{nameof(RelatedContentSelector)}|{nameof(GetTreeNodeFromNodeAliasPath)}|{currentCulture}{nodeAliasPath}";
+            var cacheSettings = new CacheSettings(60, cacheKey);
+            var cachedOutput = CacheHelper.Cache(c =>
+            {
+                var node = new MultiDocumentQuery()
+                    .OnCurrentSite()
+                    .Culture(GetEditFormCulture())
+                    .CombineWithDefaultCulture()
+                    .LatestVersion()
+                    .Path(nodeAliasPath)
+                    .FirstOrDefault();
+                if (c.Cached && node != null)
+                {
+                    c.CacheDependency = CacheHelper.GetCacheDependency($"documentid|{node.DocumentID}");
+                }
+                return node;
+            }, cacheSettings);
+            return cachedOutput;
         }
 
 
@@ -810,6 +856,10 @@ namespace CMSApp.CMSFormControls.RelatedContentSelector
                 var editUrl = UrlResolver.ResolveUrl($"~/CMSFormControls/BlueModus/RelatedContentSelector/Dialogs/Edit.aspx");
 
                 script.Append(@"
+                // Define OEIsMobile for backward compatibility with Kentico 12 scripts
+                if (typeof OEIsMobile == 'undefined') {
+                   window.OEIsMobile = false;
+                }
 
                 function RefreshTree()
                 {
@@ -862,7 +912,7 @@ namespace CMSApp.CMSFormControls.RelatedContentSelector
 
                 case "reload":
                     // Reload the data
-                    InitializeItems(GetDelimiterWrappedValue());
+                    InitializeRepeater(GetDelimiterWrappedValue());
                     break;
             }
 
