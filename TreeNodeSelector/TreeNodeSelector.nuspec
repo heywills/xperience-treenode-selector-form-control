@@ -2,7 +2,7 @@
 <package >
 	<metadata>
 		<id>$id$</id>
-		<version>$version$</version>
+		<version>$version$-a</version>
 		<title>$title$</title>
 		<authors>Kentico Community</authors>
 		<owners>Kentico Community</owners>
@@ -12,10 +12,11 @@
 		<license type="expression">MIT</license>
 		<description>$description$</description>
 		<releaseNotes>
+		1.0.8 - Optimized SQL query for performance. It increased document name filtering performance by 5 times in some tests.
 		1.0.7 - Fixed bug that caused item removal or sorting to be lost during postbacks triggered by sibling controls.
 		      - Added caching to improve postback performance.
-			  - Optimized queries of multiple treenodes.
-			  - Resolved script error caused by removal of DeviceContext/OEIsMobile from Kentico 13.
+		      - Optimized queries of multiple treenodes.
+		      - Resolved script error caused by removal of DeviceContext/OEIsMobile from Kentico 13.
 		1.0.6 - Fixed bug that prevented users from having more than one word in search query
 		1.0.5 - Fixed bug that prevented limiting page selection to exactly two.
 		      - Updated Kentico.Xperience.Libraries 13.0.13 to prevent requiring an assemblyBinding to continuousintegration.exe.config.
@@ -24,7 +25,7 @@
 		1.0.2 - Support for hosting CMS in an IIS virtual directory
 		1.0.1 - Initial version
 		</releaseNotes>
-		<copyright>2023 Kentico Community</copyright>
+		<copyright>2024 Kentico Community</copyright>
 		<tags>Kentico Xperience Atomic Content FormControl Selector</tags>
 		<dependencies>
 			<dependency id="Kentico.Xperience.Libraries" version="[13.0.0,13.1.0)" />

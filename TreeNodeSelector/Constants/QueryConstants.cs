@@ -13,7 +13,7 @@ namespace XperienceCommunity.TreeNodeSelectorFormControl.Constants
 		public const string ClassName = "cms.root";
         public const string FullyQualifiedQueryName = ClassName + "." + QueryName;
 
-        public const string QueryText = 
+        public const string QueryText =
 @"/*  
     Query required by ~\CMSFormControls\BlueModus\RelatedContentSelector\TreeSelectorDialog\TreeSelectorDialog.aspx.cs
 	This query is provided by the Nuget package XperienceCommunity.TreeNodeSelectorFormControl.
@@ -56,8 +56,6 @@ parameter, even when it was negated.
 DECLARE @sql nvarchar(max)
 SET @sql =
 N'
-DECLARE @SearchLikeExpression nvarchar(52);
-SET @SearchLikeExpression=N''%'' + @SearchText + N''%'';
 DECLARE @StartingPathLikeExpression nvarchar(452);
 SET @StartingPathLikeExpression = 
 CASE
@@ -234,7 +232,7 @@ BEGIN
 		NodeID IN (SELECT NodeID FROM SelectableTreeNodes)
 		AND
 		/* This node satisfies the searchtext */
-		Tree.DocumentName LIKE @SearchLikeExpression
+		CHARINDEX(@SearchText, Tree.DocumentName) <> 0
 	)';
 END
 -- Now add the main SELECT expression that returns the
