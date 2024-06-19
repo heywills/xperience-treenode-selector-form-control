@@ -179,7 +179,7 @@ namespace CMSApp.CMSFormControls.BlueModus.RelatedContentSelector.TreeSelectorDi
                 else if(hasChildSearchHit && 
                         (_nodesExpandedForSearchHits == (MAX_NODES_TO_EXPAND_FOR_SEARCH_HITS + 1)))
                 {
-                    InstructionsPanel.Controls.Add(new Literal { Text = $"<p>Up to {MAX_NODES_TO_EXPAND_FOR_SEARCH_HITS} nodes were automatically expanded to show the first search hits. Expand the tree sections or enter a more specific search term to find what you need.</p>" });
+                    InstructionsPanel.Controls.Add(new Literal { Text = "<p>A few nodes were expanded to show search hits. To find more, expand the tree or try another search.</p>" });
                 }
                 // Expand selected items
                 if (hasCheckedChildren || expandForSearchHit)

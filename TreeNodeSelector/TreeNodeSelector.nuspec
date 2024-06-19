@@ -2,7 +2,7 @@
 <package >
 	<metadata>
 		<id>$id$</id>
-		<version>$version$-b</version>
+		<version>$version$</version>
 		<title>$title$</title>
 		<authors>Kentico Community</authors>
 		<owners>Kentico Community</owners>
@@ -14,8 +14,10 @@
 		<releaseNotes>
 		1.0.8 - Optimized SQL query for performance. It increased document name filtering performance by 5 times in some tests.
 		      - Optimized search results by reducing automatic tree expansion from up to 20 sections down to 3 sections.
-			    This reduces the number of SQL queries that are automatically executed when a search is performed.
-			  - Improved search user experience by adding a loading indicator when a search is submitted.
+		        This reduces the number of SQL queries that are automatically executed when a search is performed.
+		      - Improved search user experience by adding a loading indicator when a search is submitted.
+			  - Shortened module name to prevent a maxpath error (reported as "file does not exist" in nuget).
+			    Kentico uses the module name to create a deep folder structure under App_Data/CMSModules.
 		1.0.7 - Fixed bug that caused item removal or sorting to be lost during postbacks triggered by sibling controls.
 		      - Added caching to improve postback performance.
 		      - Optimized queries of multiple treenodes.

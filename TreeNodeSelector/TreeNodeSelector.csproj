@@ -73,6 +73,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>powershell.exe -ExecutionPolicy Bypass -NoProfile -NonInteractive -File $(ProjectDir)\build\post-build.ps1 -projectDir "$(ProjectDir)\" -assemblyPath $(TargetPath) -assemblyName $(TargetName)</PostBuildEvent>
+    <PostBuildEvent>powershell.exe -ExecutionPolicy Bypass -NoProfile -NonInteractive -File $(ProjectDir)\build\post-build.ps1 -projectDir "$(ProjectDir)\" -assemblyPath $(TargetPath) -moduleName Xc.TreeSelector</PostBuildEvent>
   </PropertyGroup>
 </Project>

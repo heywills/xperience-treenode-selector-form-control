@@ -1,7 +1,18 @@
 ﻿<#
 The script must be called by the project's post-build event like this:
 
-powershell.exe -ExecutionPolicy Bypass -NoProfile -NonInteractive -File $(ProjectDir)\build\post-build.ps1 -projectDir "$(ProjectDir)\" -assemblyPath $(TargetPath) -assemblyName $(TargetName)
+powershell.exe -ExecutionPolicy Bypass -NoProfile -NonInteractive -File $(ProjectDir)\build\post-build.ps1 -projectDir "$(ProjectDir)\" -assemblyPath $(TargetPath) -moduleName [KenticoModuleName]
+
+** ModuleName **
+The module name is used to create deep paths in the Kentico file system, so
+be cautions about using the full assembly name or full Nuget package name
+as the module name. In a prior version, a long name created a path in
+CMS projects like this:
+src/packages/XperienceCommunity.TreeNodeSelectorFormControl.1.0.2/content/App_Data/CMSModules/XperienceCommunity.TreeNodeSelectorFormControl/Install/XperienceCommunity.TreeNodeSelectorFormControl_1.0.2.zip
+It forced a 205 chars long path leaving only 51 for the parent path.
+
+Instead, use a short unique name for the module, but make sure it's the same
+name used for the ResourceInfo.ResourceName property of the Kentico module.
 
 It creates two artifacts that will cause Kentico to track the installation
 of the module, so that when the NuGet package is uninstalled it will automatically
@@ -34,7 +45,7 @@ needed path, to prevent Kentico's exception.
 param(
 	[Parameter(Mandatory=$true)] $projectDir,
 	[Parameter(Mandatory=$true)] $assemblyPath,
-	[Parameter(Mandatory=$true)] $assemblyName
+	[Parameter(Mandatory=$true)] $moduleName
 )
 
 function GetModuleVersion($assemblyPath)
@@ -46,13 +57,13 @@ function GetModuleVersion($assemblyPath)
 	return $moduleVersion
 }
 
-function CreateCorrectlyNamedEmptyExport($projectDir, $moduleVersion, $assemblyName)
+function CreateCorrectlyNamedEmptyExport($projectDir, $moduleVersion, $moduleName)
 {
 	Write-Host "    Creating empty module export file"
     $projectDirTrimmed = TrimTrailingSlash $projectDir
 	$templateExportPath = $projectDirTrimmed + "\build\EmptyExport.zip"
-	$targetFolderPath = ("{0}\content\App_Data\CMSModules\{1}\Install" -f $projectDirTrimmed, $assemblyName)
-	$targetExportPath = ("{0}\{1}_{2}.zip" -f $targetFolderPath, $assemblyName, $moduleVersion)
+	$targetFolderPath = ("{0}\content\App_Data\CMSModules\{1}\Install" -f $projectDirTrimmed, $moduleName)
+	$targetExportPath = ("{0}\{1}_{2}.zip" -f $targetFolderPath, $moduleName, $moduleVersion)
 	if (Test-Path -Path $targetFolderPath) {
 		Write-Host ("      Deleting contents of: {0}" -f $targetFolderPath)
 		Remove-Item ("{0}\*.*" -f $targetFolderPath)
@@ -67,7 +78,7 @@ function CreateCorrectlyNamedEmptyExport($projectDir, $moduleVersion, $assemblyN
 	Copy-Item $templateExportPath $targetExportPath
 }
 
-function CreateModuleMetaFile($projectDir, $moduleVersion, $assemblyName, $assemblyPath)
+function CreateModuleMetaFile($projectDir, $moduleVersion, $moduleName, $assemblyPath)
 {
 	Write-Host "    Creating module meta file"
     $binFolderPath = Split-Path $assemblyPath
@@ -75,10 +86,10 @@ function CreateModuleMetaFile($projectDir, $moduleVersion, $assemblyName, $assem
     Add-Type -Path $cmsCoreAssemblyPath
     $projectDirTrimmed = TrimTrailingSlash $projectDir
     $moduleMetaDataObject = New-Object -TypeName CMS.Core.ModuleInstallationMetaData
-    $moduleMetaDataObject.Name = $assemblyName
+    $moduleMetaDataObject.Name = $moduleName
     $moduleMetaDataObject.Version = $moduleVersion
-	$targetFolderPath = ("{0}\content\App_Data\CMSModules\CMSInstallation\Packages" -f $projectDirTrimmed, $assemblyName)
-	$targetMetaFilePath = ("{0}\{1}_{2}.xml" -f $targetFolderPath, $assemblyName, $moduleVersion)
+	$targetFolderPath = ("{0}\content\App_Data\CMSModules\CMSInstallation\Packages" -f $projectDirTrimmed, $moduleName)
+	$targetMetaFilePath = ("{0}\{1}_{2}.xml" -f $targetFolderPath, $moduleName, $moduleVersion)
 	if (Test-Path -Path $targetFolderPath) {
 		Write-Host ("      Deleting contents of: {0}" -f $targetFolderPath)
 		Remove-Item ("{0}\*.*" -f $targetFolderPath)
@@ -105,12 +116,12 @@ function TrimTrailingSlash($path)
 try {
 	Write-Host "START: post-build.ps1 (Create artifacts for Kentico module package)"
 	Write-Host ("    Project directory: {0}" -f $projectDir)
-	Write-Host ("    Assembly name: {0}" -f $assemblyName)
+	Write-Host ("    Module name: {0}" -f $moduleName)
 	Write-Host ("    Assembly path: {0}" -f $assemblyPath)
 	$moduleVersion = GetModuleVersion $assemblyPath
 	Write-Host ("    Module version: {0}" -f $moduleVersion)
-	CreateCorrectlyNamedEmptyExport $projectDir $moduleVersion $assemblyName
-	CreateModuleMetaFile $projectDir $moduleVersion $assemblyName $assemblyPath
+	CreateCorrectlyNamedEmptyExport $projectDir $moduleVersion $moduleName
+	CreateModuleMetaFile $projectDir $moduleVersion $moduleName $assemblyPath
 	Write-Host ("COMPLETE: post-build.ps1")
 
 	exit 0
