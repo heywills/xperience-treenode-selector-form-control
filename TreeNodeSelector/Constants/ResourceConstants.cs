@@ -2,7 +2,7 @@
 {
     public static class ResourceConstants
     {
-        public const string ResourceName = "XperienceCommunity.TreeNodeSelectorFormControl";
+        public const string ResourceName = "Xc.TreeSelector";
         public const string ResourceDisplayName = "Kentico Xperience TreeNode Selector Form Control";
         public const string ResourceDescription = "This module uses provides a custom TreeNode selector form control to provide a tree-based selector, with configurable page type and path filters.";
         public const bool ResourceIsInDevelopment = false;

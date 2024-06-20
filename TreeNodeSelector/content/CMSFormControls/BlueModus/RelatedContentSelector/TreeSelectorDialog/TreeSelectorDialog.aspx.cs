@@ -25,7 +25,7 @@ namespace CMSApp.CMSFormControls.BlueModus.RelatedContentSelector.TreeSelectorDi
 
         private const char NODE_SEPARATOR = '|';
         private const int DEFAULT_SELECTION_LIMIT = 50;
-        private const int MAX_NODES_TO_EXPAND_FOR_SEARCH_HITS = 20;
+        private const int MAX_NODES_TO_EXPAND_FOR_SEARCH_HITS = 3;
         private readonly string _notTranslatedTooltip;
         private string _valuesSeparator = ";";
         private string _callbackValues;
@@ -97,7 +97,8 @@ namespace CMSApp.CMSFormControls.BlueModus.RelatedContentSelector.TreeSelectorDi
             // Reload tree
             TreeControl.ReloadData();
 
-            ScriptHelper.RegisterClientScriptBlock(this, typeof(string), "SKUProductSectionSelectionScript", GetSelectionScript(), true);
+            ScriptHelper.RegisterClientScriptBlock(this, typeof(string), "TreeSelectorScript", GetSelectorScript(), true);
+            SearchButton.OnClientClick = "displayLoader(); return true;";
             RegisterStyles();
 
             if (_createdNodes == 0)
@@ -178,7 +179,7 @@ namespace CMSApp.CMSFormControls.BlueModus.RelatedContentSelector.TreeSelectorDi
                 else if(hasChildSearchHit && 
                         (_nodesExpandedForSearchHits == (MAX_NODES_TO_EXPAND_FOR_SEARCH_HITS + 1)))
                 {
-                    InstructionsPanel.Controls.Add(new Literal { Text = $"<p>Up to {MAX_NODES_TO_EXPAND_FOR_SEARCH_HITS} nodes were expanded to show the first search hits.</p>" });
+                    InstructionsPanel.Controls.Add(new Literal { Text = "<p>A few nodes were expanded to show search hits. To find more, expand the tree or try another search.</p>" });
                 }
                 // Expand selected items
                 if (hasCheckedChildren || expandForSearchHit)
@@ -317,7 +318,7 @@ namespace CMSApp.CMSFormControls.BlueModus.RelatedContentSelector.TreeSelectorDi
         }
 
 
-        private string GetSelectionScript()
+        private string GetSelectorScript()
         {
             var parentClientId = QueryHelper.GetControlClientId("clientId", string.Empty);
 
@@ -328,6 +329,7 @@ function pageLoad(sender, args)
 {{ 
     EnsureLimitEnableState();
     WatchTreeChanges();
+    hideLoader();
 }}
 
 // When tree expansion occurs, ASP.NET Script Callbacks are used by
@@ -478,6 +480,18 @@ function ProcessTreeCheckbox(chkbox, hash, changeChecked, getHash) {{
             
 function Cancel() {{
     wopener.US_RefreshPage_{parentClientId}(); CloseDialog();
+}}
+
+function displayLoader() {{
+    if (window.Loader) {{
+        window.Loader.show();
+    }}
+}}
+
+function hideLoader() {{
+    if (window.Loader) {{
+        window.Loader.hide();
+    }}
 }}
 
 {GetButtonsScript()}";

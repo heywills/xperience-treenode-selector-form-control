@@ -351,5 +351,6 @@ MigrationBackup/
 
 # Ignore build-generated module export file
 TreeNodeSelector/content/App_Data/CMSModules/XperienceCommunity.TreeNodeSelectorFormControl/Install/
+TreeNodeSelector/content/App_Data/CMSModules/Xc.TreeSelector/Install/
 # Ignore build-generated module meta file.
 TreeNodeSelector/content/App_Data/CMSModules/CMSInstallation/Packages/
