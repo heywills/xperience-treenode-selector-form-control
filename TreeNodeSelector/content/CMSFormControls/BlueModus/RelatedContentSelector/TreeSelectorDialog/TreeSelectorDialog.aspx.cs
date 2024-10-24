@@ -127,7 +127,7 @@ namespace CMSApp.CMSFormControls.BlueModus.RelatedContentSelector.TreeSelectorDi
                 var nodeIsSelectable = ValidationHelper.GetBoolean(itemData["IsSelectable"], false);
                 var hasChildSearchHit = ValidationHelper.GetBoolean(itemData["HasChildSearchHit"], false);
                 var isAvailableInCurrentCulture = ValidationHelper.GetBoolean(itemData["IsCurrentCulture"], false);
-                var typeIcon = typeIconClass.IsNullOrWhiteSpace()
+                var typeIcon = string.IsNullOrWhiteSpace(typeIconClass)
                         ? string.Empty
                         : $"<i aria-hidden='true' class='{typeIconClass} cms-icon-80'></i>";
 
@@ -275,7 +275,7 @@ namespace CMSApp.CMSFormControls.BlueModus.RelatedContentSelector.TreeSelectorDi
         {
             // The SQL query will be optimized to avoid an unnecessary LIKE condition
             // if "/" is is replaced with an empty string.
-            var rootPath = (_startPath.IsNullOrWhiteSpace() || (_startPath == "/")) ? string.Empty : _startPath;
+            var rootPath = (string.IsNullOrWhiteSpace(_startPath) || (_startPath == "/")) ? string.Empty : _startPath;
             var rootLevel = rootPath.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries).Length;
             var selectedNodeGuids = GetSelectedNodeGuids();
             var searchText = HiddenCurrentSearchTerm.Value.Trim();
