@@ -12,24 +12,25 @@
 		<license type="expression">MIT</license>
 		<description>$description$</description>
 		<releaseNotes>
-		1.0.8 - Optimized SQL query for performance. It increased document name filtering performance by 5 times in some tests.
-		      - Optimized search results by reducing automatic tree expansion from up to 20 sections down to 3 sections.
-		        This reduces the number of SQL queries that are automatically executed when a search is performed.
-		      - Improved search user experience by adding a loading indicator when a search is submitted.
-			  - Shortened module name to prevent a maxpath error (reported as "file does not exist" in nuget).
-			    Kentico uses the module name to create a deep folder structure under App_Data/CMSModules.
-		1.0.7 - Fixed bug that caused item removal or sorting to be lost during postbacks triggered by sibling controls.
-		      - Added caching to improve postback performance.
-		      - Optimized queries of multiple treenodes.
-		      - Resolved script error caused by removal of DeviceContext/OEIsMobile from Kentico 13.
-		1.0.6 - Fixed bug that prevented users from having more than one word in search query
-		1.0.5 - Fixed bug that prevented limiting page selection to exactly two.
-		      - Updated Kentico.Xperience.Libraries 13.0.13 to prevent requiring an assemblyBinding to continuousintegration.exe.config.
-		1.0.4 - Fixed potential for missing cms.query dependency
-		1.0.3 - Support for culture codes greater than 5 chars
-		1.0.2 - Support for hosting CMS in an IIS virtual directory
-		1.0.1 - Initial version
-		</releaseNotes>
+      1.0.9 - Fixed Web compile exception to private library [IsNullOrWhiteSpace() extention method)
+      1.0.8 - Optimized SQL query for performance. It increased document name filtering performance by 5 times in some tests.
+      - Optimized search results by reducing automatic tree expansion from up to 20 sections down to 3 sections.
+      This reduces the number of SQL queries that are automatically executed when a search is performed.
+      - Improved search user experience by adding a loading indicator when a search is submitted.
+      - Shortened module name to prevent a maxpath error (reported as "file does not exist" in nuget).
+      Kentico uses the module name to create a deep folder structure under App_Data/CMSModules.
+      1.0.7 - Fixed bug that caused item removal or sorting to be lost during postbacks triggered by sibling controls.
+      - Added caching to improve postback performance.
+      - Optimized queries of multiple treenodes.
+      - Resolved script error caused by removal of DeviceContext/OEIsMobile from Kentico 13.
+      1.0.6 - Fixed bug that prevented users from having more than one word in search query
+      1.0.5 - Fixed bug that prevented limiting page selection to exactly two.
+      - Updated Kentico.Xperience.Libraries 13.0.13 to prevent requiring an assemblyBinding to continuousintegration.exe.config.
+      1.0.4 - Fixed potential for missing cms.query dependency
+      1.0.3 - Support for culture codes greater than 5 chars
+      1.0.2 - Support for hosting CMS in an IIS virtual directory
+      1.0.1 - Initial version
+    </releaseNotes>
 		<copyright>2024 Kentico Community</copyright>
 		<tags>Kentico Xperience Atomic Content FormControl Selector</tags>
 		<dependencies>

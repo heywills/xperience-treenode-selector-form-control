@@ -173,7 +173,7 @@ namespace CMSApp.CMSFormControls.RelatedContentSelector
         /// <returns></returns>
         private string GetStartPath()
         {
-            if (!_validatedStartingPath.IsNullOrWhiteSpace())
+            if (!string.IsNullOrWhiteSpace(_validatedStartingPath))
             {
                 return _validatedStartingPath;
             }
@@ -449,7 +449,7 @@ namespace CMSApp.CMSFormControls.RelatedContentSelector
                 return String.Empty;
             }
             var uniValue = string.Join(ITEM_SEPARATOR.ToString(), items.Select(i => i.ItemValue));
-            if (uniValue.IsNullOrWhiteSpace())
+            if (string.IsNullOrWhiteSpace(uniValue))
             {
                 return String.Empty;
             }
@@ -580,7 +580,7 @@ namespace CMSApp.CMSFormControls.RelatedContentSelector
                 {
                     var safeValues = GetItemGuidsFromValueString(safeValueSet);
                     var newValues = GetItemGuidsFromValueString(newValue);
-                    _hashIsValid = newValues.All(guidString => guidString.IsNullOrWhiteSpace() || safeValues.Contains(guidString));
+                    _hashIsValid = newValues.All(guidString => string.IsNullOrWhiteSpace(guidString) || safeValues.Contains(guidString));
                     if (_hashIsValid)
                     {
                         return;
@@ -630,15 +630,15 @@ namespace CMSApp.CMSFormControls.RelatedContentSelector
 
         private string EnsureValueFormat(string value)
         {
-            if (value.IsNullOrWhiteSpace())
+            if (string.IsNullOrWhiteSpace(value))
             {
                 return string.Empty;
             }
-            if (value.Left(1) != ITEM_SEPARATOR.ToString())
+            if (!value.StartsWith(ITEM_SEPARATOR.ToString()))
             {
                 value = ITEM_SEPARATOR + value;
             }
-            if (value.Right(1) != ITEM_SEPARATOR.ToString())
+            if (!value.EndsWith(ITEM_SEPARATOR.ToString()))
             {
                 value += ITEM_SEPARATOR;
             }
@@ -663,7 +663,7 @@ namespace CMSApp.CMSFormControls.RelatedContentSelector
 
         private TreeNode GetTreeNodeFromNodeGuid(string guidString)
         {
-            if (guidString.IsNullOrWhiteSpace())
+            if (string.IsNullOrWhiteSpace(guidString))
             {
                 return null;
             }
@@ -706,7 +706,7 @@ namespace CMSApp.CMSFormControls.RelatedContentSelector
 
         private TreeNode GetTreeNodeFromNodeAliasPath(string nodeAliasPath)
         {
-            if(nodeAliasPath.IsNullOrWhiteSpace())
+            if(string.IsNullOrWhiteSpace(nodeAliasPath))
             {
                 return null;
             }
